@@ -1,4 +1,4 @@
-# GoAccess-NPM-Portal
+# ![Logo](logo.png) GoAccess-NPM-Portal
 
 ## Description
 
