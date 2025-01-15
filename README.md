@@ -1,5 +1,12 @@
 # ![Logo](logo.png) GoAccess-NPM-Portal
 
+<div align="center">
+  
+[![Docker pulls](https://img.shields.io/docker/pulls/pekno/goaccess-npm-portal)](https://hub.docker.com/r/pekno/goaccess-npm-portal)
+  
+</div>
+
+
 ## Description
 
 This project is a customized version of the original [goaccess-for-nginxproxymanager](https://github.com/xavier-hernandez/goaccess-for-nginxproxymanager) by [xavier-hernandez](https://github.com/xavier-hernandez). It leverages GoAccess to create a dynamic and multi-instance dashboard, providing detailed analytics for different subdomains, with each dashboard running on its dedicated port and managed by Nginx.
