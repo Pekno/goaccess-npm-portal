@@ -12,6 +12,7 @@ This project is a customized version of the original [goaccess-for-nginxproxyman
 > You can find the associated `Proxy ID` from the Proxy Host list, by clicking the `...`
 > ![Landing Page](npm.png)
 - **Landing Page**: A landing page is available at the root URL (`/`), displaying all available dashboards with clickable links for easy navigation to each one.
+
 ![Landing Page](landing_page.png)
 
 ## Configuration
