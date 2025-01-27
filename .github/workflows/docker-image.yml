@@ -6,7 +6,13 @@ on:
       - 'VERSION'  # Trigger when the VERSION file changes
     tags:
       - 'v*'       # Trigger on version tags
-
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      version:
+        description: "Specify a version (optional, overrides VERSION file)"
+        required: false
+        default: ""
+        
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
