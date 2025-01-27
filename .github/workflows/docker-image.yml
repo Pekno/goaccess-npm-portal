@@ -3,9 +3,9 @@ name: Build and Publish Docker Image
 on:
   push:
     paths:
-      - 'package.json'  # Trigger when `package.json` changes
+      - 'VERSION'  # Trigger when the VERSION file changes
     tags:
-      - 'v*'  # Trigger on tags starting with "v"
+      - 'v*'       # Trigger on version tags
 
 jobs:
   build-and-push:
@@ -23,18 +23,21 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Extract the version from the tag
-      - id: get_version
-        uses: battila7/get-version-action@v2
-
+      # Extract version from the VERSION file
+      - name: Read Version
+        id: get_version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
       # Build the Docker image
       - name: Build Docker Image
         run: |
           docker build -t ${{ vars.DOCKERHUB_IMAGE }}:latest .
-          docker tag ${{ vars.DOCKERHUB_IMAGE }}:latest ${{ vars.DOCKERHUB_IMAGE }}:${{ steps.get_version.outputs.version }}
+          docker tag ${{ vars.DOCKERHUB_IMAGE }}:latest ${{ vars.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
 
       # Push the Docker image
       - name: Push Docker Image
         run: |
           docker push ${{ vars.DOCKERHUB_IMAGE }}:latest
-          docker push ${{ vars.DOCKERHUB_IMAGE }}:${{ steps.get_version.outputs.version }}
+          docker push ${{ vars.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
