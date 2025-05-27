@@ -71,7 +71,11 @@ RUN chmod +x start.sh
 # store archives
 RUN mkdir -p /goaccess-logs/archives
 
+# Default port for the main Nginx web UI.
+# This can be overridden at runtime by the WEBUI_PORT environment variable.
+ARG DEFAULT_WEBUI_PORT=7880
+
 VOLUME ["/opt/log"]
-EXPOSE 7880
+EXPOSE ${DEFAULT_WEBUI_PORT}
 #CMD ["bash", "/goan/start.sh"]
 ENTRYPOINT ["tini", "--", "/goan/start.sh"]

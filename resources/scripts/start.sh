@@ -13,6 +13,11 @@ goaccess_debug_file=/goaccess-logs/goaccess.debug
 goaccess_invalid_file=/goaccess-logs/goaccess.invalid
 goaccess_port_start=7890
 
+# Define the Web UI port, defaulting to 7880 if WEBUI_PORT is not set
+WEBUI_PORT_ACTUAL=${WEBUI_PORT:-7880}
+NGINX_ORIGINAL_CONF="/etc/nginx/nginx.conf"
+NGINX_CUSTOM_CONF="/etc/nginx/nginx_custom.conf"
+
 echo -e "\n${goan_version}\n"
 
 ### DASHBOARD MAPPING
@@ -36,10 +41,21 @@ fi
 
 ### NGINX
 echo -e "\nNGINX SETUP..."
+echo -e "Web UI will listen on internal port: ${WEBUI_PORT_ACTUAL}"
 
 if [[ ! -d "/var/www/html" ]]; then
     mkdir -p /var/www/html
 fi
+
+# Prepare custom Nginx configuration
+if [[ ! -f "$NGINX_ORIGINAL_CONF" ]]; then
+    echo "Error: Original Nginx config $NGINX_ORIGINAL_CONF not found!"
+    exit 1
+fi
+cp "$NGINX_ORIGINAL_CONF" "$NGINX_CUSTOM_CONF"
+# Replace the listen port directive
+sed -i "s/listen [0-9]\+ default_server;/listen ${WEBUI_PORT_ACTUAL} default_server;/g" "$NGINX_CUSTOM_CONF"
+echo "Nginx configuration customized at $NGINX_CUSTOM_CONF"
 
 ### NGINX
 
@@ -83,7 +99,9 @@ fi
 
 echo "Landing page (re)generated at $landing_page using header file"
 
-tini -s -- nginx
+# Start Nginx with the custom configuration
+echo "Starting Nginx..."
+tini -s -- nginx -c "${NGINX_CUSTOM_CONF}"
 
 #Leave container running
 wait -n
