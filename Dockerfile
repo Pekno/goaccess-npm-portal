@@ -55,7 +55,7 @@ COPY /assests/maxmind/GeoLite2-ASN.mmdb /goaccess-config/GeoLite2-ASN.mmdb
 COPY /assests/maxmind/GeoLite2-Country.mmdb /goaccess-config/GeoLite2-Country.mmdb
 
 # set up nginx
-COPY /resources/nginx/index.html /var/www/html/index.html
+COPY /resources/nginx/header.html /var/www/html/header.html
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 ADD /resources/nginx/.htpasswd /opt/auth/.htpasswd
 

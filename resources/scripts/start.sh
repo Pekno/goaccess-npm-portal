@@ -17,6 +17,7 @@ echo -e "\n${goan_version}\n"
 
 ### DASHBOARD MAPPING
 echo -e "\nDASHBOARD MAPPING..."
+declare -A dashboard_map
 if [[ -n "$DASHBOARD_MAP" ]]; then
     IFS=',' read -ra pairs <<< "$DASHBOARD_MAP"
     for pair in "${pairs[@]}"; do
@@ -37,26 +38,50 @@ fi
 echo -e "\nNGINX SETUP..."
 
 if [[ ! -d "/var/www/html" ]]; then
-    mkdir /var/www/html
+    mkdir -p /var/www/html
 fi
 
 ### NGINX
 
-nav_links=""
+nav_links_html_content=""
 # BEGIN PROXY LOGS
 echo -e "\n\nNPM INSTANCES SETTING UP..."
 for key in "${!dashboard_map[@]}"; do
     port=$((goaccess_port_start++))
-    nav_links+="<a href=\"/${dashboard_map[$key]}\" target=\"_blank\" class=\"links\">${dashboard_map[$key]}</a>"
-    echo -e "\n\nSETTING UP ${dashboard_map[$key]}"
-    npm $key "${dashboard_map[$key]}" $port
+    # Ensure dashboard_map[$key] is not empty to avoid creating broken links or empty hrefs
+    if [[ -n "${dashboard_map[$key]}" ]]; then
+        nav_links_html_content+="<a href=\"/${dashboard_map[$key]}\" target=\"_blank\" class=\"links\">${dashboard_map[$key]}</a>"
+        echo -e "\n\nSETTING UP ${dashboard_map[$key]}"
+        npm "$key" "${dashboard_map[$key]}" "$port"
+    else
+        echo -e "\n\nWARNING: Empty value for key '$key' in DASHBOARD_MAP. Skipping link generation for this entry."
+    fi
 done
 # END PROXY LOGS
 
 landing_page="/var/www/html/index.html"
-sed -i "/<div id=\"dashboard-links\">/a ${nav_links}" "$landing_page"
+header_file="/var/www/html/header.html"
 
-echo "Landing page updated with dashboard links at $landing_page"
+if [[ ! -f "$header_file" ]]; then
+    echo "Error: $header_file not found. Make sure it's copied into the Docker image."
+    exit 1
+fi
+
+# Generate the index.html file
+(
+  echo "<!DOCTYPE html>"
+  echo "<html lang=\"en\">"
+  cat "${header_file}"
+  echo "<body>"
+  echo "    <div class=\"name\">GoAccess Dashboards</div>"
+  echo "    <div id=\"dashboard-links\">"
+  echo -e "${nav_links_html_content}"
+  echo "    </div>"
+  echo "</body>"
+  echo "</html>"
+) > "$landing_page"
+
+echo "Landing page (re)generated at $landing_page using header file"
 
 tini -s -- nginx
 
