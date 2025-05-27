@@ -50,7 +50,7 @@ for key in "${!dashboard_map[@]}"; do
     port=$((goaccess_port_start++))
     # Ensure dashboard_map[$key] is not empty to avoid creating broken links or empty hrefs
     if [[ -n "${dashboard_map[$key]}" ]]; then
-        nav_links_html_content+="<a href=\"/${dashboard_map[$key]}\" target=\"_blank\" class=\"links\">${dashboard_map[$key]}</a>"
+        nav_links_html_content+="<a href=\"/${dashboard_map[$key]}/\" target=\"_blank\" class=\"links\">${dashboard_map[$key]}</a>"
         echo -e "\n\nSETTING UP ${dashboard_map[$key]}"
         npm "$key" "${dashboard_map[$key]}" "$port"
     else
