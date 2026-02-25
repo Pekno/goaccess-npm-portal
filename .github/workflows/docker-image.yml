@@ -9,10 +9,14 @@ on:
   workflow_dispatch:  # Allow manual triggering
     inputs:
       version:
-        description: "Specify a version (optional, overrides VERSION file)"
+        description: "Specify a project version (optional, overrides VERSION file)"
         required: false
         default: ""
-        
+      goaccess_version:
+        description: "GoAccess version to build (optional, overrides VERSION file)"
+        required: false
+        default: ""
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -29,21 +33,41 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Extract version from the VERSION file
-      - name: Read Version
-        id: get_version
-        run: |
-          VERSION=$(cat VERSION)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          
-      # Build the Docker image
-      - name: Build Docker Image
-        run: |
-          docker build -t ${{ vars.DOCKERHUB_IMAGE }}:latest .
-          docker tag ${{ vars.DOCKERHUB_IMAGE }}:latest ${{ vars.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
+      # Set up QEMU for multi-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      # Push the Docker image
-      - name: Push Docker Image
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Extract versions from the VERSION file
+      - name: Read Versions
+        id: get_versions
         run: |
-          docker push ${{ vars.DOCKERHUB_IMAGE }}:latest
-          docker push ${{ vars.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
+          source VERSION
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "GOACCESS_VERSION=${GOACCESS_VERSION}" >> $GITHUB_ENV
+
+      # Allow workflow_dispatch inputs to override
+      - name: Apply Overrides
+        run: |
+          if [[ -n "${{ inputs.version }}" ]]; then
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          fi
+          if [[ -n "${{ inputs.goaccess_version }}" ]]; then
+            echo "GOACCESS_VERSION=${{ inputs.goaccess_version }}" >> $GITHUB_ENV
+          fi
+
+      # Build and push multi-platform Docker image
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          build-args: |
+            GOACCESS_VERSION=${{ env.GOACCESS_VERSION }}
+          tags: |
+            ${{ vars.DOCKERHUB_IMAGE }}:latest
+            ${{ vars.DOCKERHUB_IMAGE }}:${{ env.VERSION }}

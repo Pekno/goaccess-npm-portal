@@ -1,51 +1,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap" rel="stylesheet"  >
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <title>GoAccess Dashboards</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            color: #fff;
-            font-family: 'Open Sans', sans-serif;
-            font-size: 15px;
-        
-            background: #060606;
-            background: -webkit-linear-gradient(bottom right, #060606, #27293D);
-            background: -moz-linear-gradient(bottom right, #060606, #27293D);
-            background: linear-gradient(to top left, #060606, #27293D);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #D2D2D2;
+            background: #1e1e2f;
+            min-height: 100vh;
         }
-        .name {
-            margin-top:5%;
-            font-family: 'Fugaz One', cursive;
-            text-align: center;
-            font-size: 30px;
+        .container {
+            max-width: 1170px;
+            margin: 0 auto;
+            padding: 25px 15px;
         }
-        .links {
-            font-family: 'Barlow Semi Condensed', sans-serif;
-            text-align: center;
+        .page-header {
+            margin: 25px 0 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .page-header h1 {
+            font-size: 2.7em;
+            font-weight: 300;
+            color: rgba(240, 240, 240, 0.7);
+            text-transform: uppercase;
+            letter-spacing: -3px;
+        }
+        .page-header h1 span {
+            font-size: 0.4em;
+            color: #9E9E9E;
+            letter-spacing: 0;
+            vertical-align: middle;
+        }
+        .panel {
+            background: #27293d;
             margin-top: 10px;
-            padding: 15px;
-            border: 1px solid white;
-            border-width: 2px;
-            width: 290px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            border-radius: 100px;
+            padding: 0;
+            border-top: 4px solid #e14eca;
         }
-        a {
+        .panel-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2b3553;
+        }
+        .panel-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #FFF;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin: 0;
+        }
+        .panel-header h3 span {
+            font-size: 12px;
+            font-weight: 400;
+            color: #9E9E9E;
+            text-transform: none;
+            letter-spacing: 0;
+            margin-left: 8px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0;
+        }
+        .dashboard-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #D2D2D2;
             text-decoration: none;
-            color: white;
-            transition: color 0.5s; 
+            border-bottom: 1px solid #2b3553;
+            border-left: 3px solid transparent;
+            text-transform: uppercase;
+            font-size: 13px;
+            transition: all 0.15s ease;
         }
-        a:hover {
-            color: #000;
-            background: #fff;
+        .dashboard-link:hover {
+            border-left-color: #5bc0de;
+            color: #eee;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-link .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #5DB56A;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .dashboard-link .arrow {
+            margin-left: auto;
+            color: #9E9E9E;
+            font-size: 11px;
+            padding-left: 12px;
         }
     </style>
 </head>

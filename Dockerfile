@@ -1,15 +1,17 @@
 FROM alpine:latest AS builder
 
+ARG GOACCESS_VERSION=1.10.1
+
 RUN apk add --no-cache \
         build-base \
         libmaxminddb-dev \
         ncurses-dev \
-        musl-locales \   
+        musl-locales \
         gettext-dev
 
 # download goaccess
 WORKDIR /goaccess-temp
-COPY /assests/goaccess/goaccess-1.9.3.tar.gz goaccess.tar.gz
+RUN wget -O goaccess.tar.gz "https://tar.goaccess.io/goaccess-${GOACCESS_VERSION}.tar.gz"
 
 # set up goacess-debug
 WORKDIR /goaccess-debug
@@ -59,6 +61,15 @@ COPY /resources/nginx/header.html /var/www/html/header.html
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 ADD /resources/nginx/.htpasswd /opt/auth/.htpasswd
 
+# favicons
+COPY /assests/favicons/favicon.ico /var/www/html/favicon.ico
+COPY /assests/favicons/favicon-16x16.png /var/www/html/favicon-16x16.png
+COPY /assests/favicons/favicon-32x32.png /var/www/html/favicon-32x32.png
+COPY /assests/favicons/apple-touch-icon.png /var/www/html/apple-touch-icon.png
+COPY /assests/favicons/android-chrome-192x192.png /var/www/html/android-chrome-192x192.png
+COPY /assests/favicons/android-chrome-512x512.png /var/www/html/android-chrome-512x512.png
+COPY /assests/favicons/site.webmanifest /var/www/html/site.webmanifest
+
 # goaccess logs
 WORKDIR /goaccess-logs
 
@@ -66,7 +77,7 @@ WORKDIR /goan
 ADD /resources/scripts/funcs funcs
 ADD /resources/scripts/logs logs
 COPY /resources/scripts/start.sh start.sh
-RUN chmod +x start.sh
+RUN find /goan -name "*.sh" -exec sed -i 's/\r$//' {} + && chmod +x start.sh
 
 # store archives
 RUN mkdir -p /goaccess-logs/archives

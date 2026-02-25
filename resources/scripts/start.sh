@@ -66,7 +66,7 @@ for key in "${!dashboard_map[@]}"; do
     port=$((goaccess_port_start++))
     # Ensure dashboard_map[$key] is not empty to avoid creating broken links or empty hrefs
     if [[ -n "${dashboard_map[$key]}" ]]; then
-        nav_links_html_content+="<a href=\"/${dashboard_map[$key]}/\" target=\"_blank\" class=\"links\">${dashboard_map[$key]}</a>"
+        nav_links_html_content+="<a href=\"/${dashboard_map[$key]}/\" target=\"_blank\" class=\"dashboard-link\"><span class=\"indicator\"></span>${dashboard_map[$key]}<span class=\"arrow\">&#9656;</span></a>"
         echo -e "\n\nSETTING UP ${dashboard_map[$key]}"
         npm "$key" "${dashboard_map[$key]}" "$port"
     else
@@ -89,10 +89,17 @@ fi
   echo "<html lang=\"en\">"
   cat "${header_file}"
   echo "<body>"
-  echo "    <div class=\"name\">GoAccess Dashboards</div>"
-  echo "    <div id=\"dashboard-links\">"
-  echo -e "${nav_links_html_content}"
+  echo "  <div class=\"container\">"
+  echo "    <div class=\"page-header\">"
+  echo "      <h1>GoAccess <span>Dashboards</span></h1>"
   echo "    </div>"
+  echo "    <div class=\"panel\">"
+  echo "      <div class=\"panel-header\"><h3>Proxy Hosts <span>${#dashboard_map[@]} dashboards</span></h3></div>"
+  echo "      <div class=\"dashboard-grid\">"
+  echo -e "${nav_links_html_content}"
+  echo "      </div>"
+  echo "    </div>"
+  echo "  </div>"
   echo "</body>"
   echo "</html>"
 ) > "$landing_page"
