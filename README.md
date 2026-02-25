@@ -32,12 +32,15 @@ This project is a customized version of the original [goaccess-for-nginxproxyman
 
 The GoAccess version can be selected at build time via the `GOACCESS_VERSION` build arg (defaults to `1.10.1`):
 
-```bash
-# Default version
-docker build -t goaccess-npm-portal .
+The image supports `linux/amd64`, `linux/arm64`, and `linux/arm/v7`. To build locally for multiple platforms using buildx:
 
-# Specific version
-docker build --build-arg GOACCESS_VERSION=1.9.3 -t goaccess-npm-portal .
+```bash
+docker buildx create --name multiarch --use
+
+# Build and load into local Docker (single platform only)
+docker buildx build --platform linux/arm64 \
+    --build-arg GOACCESS_VERSION=1.10.1 \
+    -t goaccess-npm-portal:latest --load .
 ```
 
 ## Installation
