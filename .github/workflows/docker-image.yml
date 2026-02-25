@@ -9,10 +9,14 @@ on:
   workflow_dispatch:  # Allow manual triggering
     inputs:
       version:
-        description: "Specify a version (optional, overrides VERSION file)"
+        description: "Specify a project version (optional, overrides VERSION file)"
         required: false
         default: ""
-        
+      goaccess_version:
+        description: "GoAccess version to build (optional, overrides VERSION file)"
+        required: false
+        default: ""
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -29,17 +33,28 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Extract version from the VERSION file
-      - name: Read Version
-        id: get_version
+      # Extract versions from the VERSION file
+      - name: Read Versions
+        id: get_versions
         run: |
-          VERSION=$(cat VERSION)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          
+          source VERSION
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "GOACCESS_VERSION=${GOACCESS_VERSION}" >> $GITHUB_ENV
+
+      # Allow workflow_dispatch inputs to override
+      - name: Apply Overrides
+        run: |
+          if [[ -n "${{ inputs.version }}" ]]; then
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          fi
+          if [[ -n "${{ inputs.goaccess_version }}" ]]; then
+            echo "GOACCESS_VERSION=${{ inputs.goaccess_version }}" >> $GITHUB_ENV
+          fi
+
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t ${{ vars.DOCKERHUB_IMAGE }}:latest .
+          docker build --build-arg GOACCESS_VERSION=${{ env.GOACCESS_VERSION }} -t ${{ vars.DOCKERHUB_IMAGE }}:latest .
           docker tag ${{ vars.DOCKERHUB_IMAGE }}:latest ${{ vars.DOCKERHUB_IMAGE }}:${{ env.VERSION }}
 
       # Push the Docker image

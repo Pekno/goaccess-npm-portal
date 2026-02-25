@@ -28,6 +28,18 @@ This project is a customized version of the original [goaccess-for-nginxproxyman
 - Nginx automatically routes traffic to each GoAccess instance based on the subdomain mapping.
 - **`WEBUI_PORT`**: (Optional) The internal port on which the main Nginx web UI (landing page) will listen. Defaults to `7880`. If you change this, you'll need to adjust your `docker run -p` mapping accordingly. For example, if you set `WEBUI_PORT=8080`, you would use `-p <host_port>:8080`.
 
+## Building
+
+The GoAccess version can be selected at build time via the `GOACCESS_VERSION` build arg (defaults to `1.10.1`):
+
+```bash
+# Default version
+docker build -t goaccess-npm-portal .
+
+# Specific version
+docker build --build-arg GOACCESS_VERSION=1.9.3 -t goaccess-npm-portal .
+```
+
 ## Installation
 
 Make sure to mount the directory containing your log files to the `/opt/log` directory in the Docker container. The log files are needed for GoAccess to generate the dashboards.
@@ -35,9 +47,9 @@ Make sure to mount the directory containing your log files to the `/opt/log` dir
 Example:
 
 ```bash
-docker run 
-    -v /path/to/your/logs:/opt/log 
-    -p 7880:7880 
+docker run
+    -v /path/to/your/logs:/opt/log
+    -p 7880:7880
     -e DASHBOARD_MAP="1=Home_Assistant,3=Vault,4=Plex,11=CV,7=Cloud" 
     -d pekno/goaccess-npm-portal:latest
 ```
