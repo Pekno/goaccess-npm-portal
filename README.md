@@ -76,7 +76,7 @@ A Docker image is also available via [Docker Hub](https://hub.docker.com/r/pekno
 
 ## Ideas / To do
 
-- [ ] Add Favico
+- [x] Add Favico
 
 ## Credits
 
