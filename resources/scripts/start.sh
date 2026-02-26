@@ -2,8 +2,6 @@
 source $(dirname "$0")/funcs/internal.sh
 source $(dirname "$0")/funcs/environment.sh
 source $(dirname "$0")/logs/npm.sh
-source $(dirname "$0")/logs/npm_redirection.sh
-source $(dirname "$0")/logs/npm_error.sh
 
 goan_version="GOAN v1.1.31"
 goan_log_path="/opt/log"
